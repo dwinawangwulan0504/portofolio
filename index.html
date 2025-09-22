@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="doc_title">Biodata Interaktif - Dwi Nawang Wulan</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Noto+Sans+Javanese&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- GSAP for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Chart.js for interactive charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Chart.js Plugin for displaying labels on charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+        .font-javanese { font-family: 'Noto Sans Javanese', sans-serif; }
+        .font-arabic { font-family: 'Noto Naskh Arabic', sans-serif; }
+
+        #particle-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; opacity: 0.3;
+        }
+        .nav-button {
+            background-color: #1e293b;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .nav-button:hover { background-color: #334155; transform: translateY(-2px); }
+        .nav-button.active { background-color: #0ea5e9; color: #ffffff; font-weight: 600; }
+        
+        .lang-button {
+            background-color: transparent;
+            border: 1px solid #334155;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .lang-button:hover { background-color: #334155; }
+        .lang-button.active { background-color: #0ea5e9; border-color: #0ea5e9; color: #ffffff; }
+
+        .content-panel { background-color: #1e293b; border: 1px solid #334155; }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #38bdf8; }
+        
+        /* Custom styles for the table in Analysis */
+        .analysis-table th, .analysis-table td {
+            border: 1px solid #334155;
+            padding: 0.75rem;
+        }
+        .analysis-table th {
+            background-color: #334155;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="container mx-auto max-w-4xl px-4 py-8">
+
+        <!-- Javanese Welcome Text -->
+        <div class="text-center mb-1 text-slate-300">
+            <p class="text-xs text-slate-500 tracking-widest mt-1">by XI TKJ 1</p>
+            <p class="text-2xl" data-translate="welcome_text"></p>
+        </div>
+
+        <!-- Language Switcher -->
+        <div id="lang-switcher" class="flex justify-center items-center space-x-2 my-6">
+            <button class="lang-button text-xs px-3 py-1 rounded-full active" data-lang="id">ID</button>
+            <button class="lang-button text-xs px-3 py-1 rounded-full" data-lang="jv">JV</button>
+            <button class="lang-button text-xs px-3 py-1 rounded-full" data-lang="en">EN</button>
+            <button class="lang-button text-xs px-3 py-1 rounded-full" data-lang="ar">AR</button>
+        </div>
+
+        <!-- Header Profile Section -->
+        <header id="header" class="text-center mb-8">
+            <img src="profil.jpg" alt="Avatar Dwi Nawang Wulan" class="w-28 h-28 mx-auto rounded-full border-4 border-sky-500 shadow-lg shadow-sky-500/20 mb-5">
+            <h1 class="text-3xl md:text-4xl font-bold text-white" data-translate="profile_name">Dwi Nawang Wulan</h1>
+            <p class="text-xl font-javanese text-slate-400 mt-2" data-translate="profile_name_javanese">ꦢ꧀ꦮꦶ ꦤꦮꦁ ꦮꦸꦭꦤ꧀</p>
+            <p class="mt-4 max-w-xl mx-auto text-sm text-slate-300 italic" data-translate="profile_quote">
+                "Hidup layaknya naskah Drakor paling epik, di mana tiap tantangan adalah plot twist pembentuk karakter. Raih setiap detik seolah melodi terakhir, ciptakan simfoni kehidupan yang abadi, karena happy ending adalah janji di akhir babak."
+            </p>
+        </header>
+
+        <!-- Navigation Buttons -->
+        <nav id="button-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+            <button class="nav-button flex items-center justify-center text-center p-3 rounded-lg active" data-target="biodata-content" data-translate="btn_biodata">Biodata</button>
+            <button class="nav-button flex items-center justify-center text-center p-3 rounded-lg" data-target="pendidikan-content" data-translate="btn_pendidikan">Pendidikan</button>
+            <button class="nav-button flex items-center justify-center text-center p-3 rounded-lg" data-target="keterampilan-content" data-translate="btn_keterampilan">Keterampilan</button>
+            <button class="nav-button flex items-center justify-center text-center p-3 rounded-lg" data-target="pengalaman-content" data-translate="btn_pengalaman">Pengalaman</button>
+            <button class="nav-button flex items-center justify-center text-center p-3 rounded-lg" data-target="prestasi-content" data-translate="btn_prestasi">Prestasi</button>
+            <button class="nav-button flex items-center justify-center text-center p-3 rounded-lg" data-target="statistik-content" data-translate="btn_statistik">Statistik</button>
+            <button class="nav-button flex items-center justify-center text-center p-3 rounded-lg" data-target="hobi-content" data-translate="btn_hobi">Hobi</button>
+            <button class="nav-button flex items-center justify-center text-center p-3 rounded-lg" data-target="analisis-content" data-translate="btn_analisis">Analisis</button>
+        </nav>
+        
+        <!-- Content Panels Container -->
+        <main id="content-container">
+            <!-- Biodata Section -->
+            <div id="biodata-content" class="content-panel rounded-lg p-6">
+                <h2 class="text-2xl font-bold text-white mb-4" data-translate="title_biodata">Biodata Diri</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-slate-300">
+                    <p><strong data-translate="bio_nama">Nama:</strong> Dwi Nawang Wulan</p>
+                    <p><strong data-translate="bio_ttl">Tempat, Tanggal Lahir:</strong> Pekalongan, 25 April 2009</p>
+                    <p class="sm:col-span-2"><strong data-translate="bio_alamat">Alamat:</strong> Desa Warkid RT 04 RW 04, Wiradesa, Pekalongan</p>
+                    <p><strong data-translate="bio_jk">Jenis Kelamin:</strong> <span data-translate="val_perempuan">Perempuan</span></p>
+                    <p><strong data-translate="bio_agama">Agama:</strong> Islam</p>
+                    <p><strong data-translate="bio_warga">Kewarganegaraan:</strong> <span data-translate="val_indonesia">Indonesia</span></p>
+                    <p><strong data-translate="bio_status">Status:</strong> <span data-translate="val_pelajar">Pelajar</span></p>
+                </div>
+                <!-- Visi dan Harapan -->
+                <div class="mt-6 pt-4 border-t border-slate-600 text-slate-300">
+                    <h3 class="text-lg font-semibold text-white mb-3" data-translate="bio_visi_title">Visi dan Harapan</h3>
+                    <p class="mt-2"><strong data-translate="bio_cita">Cita-cita:</strong> <span data-translate="val_cita">Sarjana Psikologi</span></p>
+                    <p class="mt-2"><strong data-translate="bio_harapan" class="block">Harapan Masa Depan:</strong> <span data-translate="val_harapan" class="block italic text-slate-400 mt-1">"Semoga senyumku memeluk jiwa yang terluka, membisikkan bahwa mereka berharga."</span></p>
+                </div>
+
+                <!-- Informasi Kontak -->
+                <div class="mt-6 pt-4 border-t border-slate-600 text-slate-300">
+                    <h3 class="text-lg font-semibold text-white mb-3" data-translate="bio_kontak_title">Informasi Kontak</h3>
+                    <p><strong data-translate="bio_telepon">Nomor Telepon:</strong> 08587935xxyy</p>
+                    <p><strong data-translate="bio_email">Email:</strong> dwinawangwulxxyy@gmail.com</p>
+                </div>
+            </div>
+            <!-- Education Section -->
+            <div id="pendidikan-content" class="content-panel rounded-lg p-6 hidden">
+                <h2 class="text-2xl font-bold text-white mb-4" data-translate="title_pendidikan">Riwayat Pendidikan</h2>
+                <ul class="space-y-3 list-disc list-inside">
+                    <li data-translate="edu_sd">SDN Waru Kidul (2015-2021)</li>
+                    <li data-translate="edu_smp">SMPN 2 Tirto (2021-2024)</li>
+                    <li data-translate="edu_smk">SMK Ma'arif NU Tirto (2024)</li>
+                </ul>
+            </div>
+            <!-- Skills Section -->
+            <div id="keterampilan-content" class="content-panel rounded-lg p-6 hidden">
+                <h2 class="text-2xl font-bold text-white mb-4" data-translate="title_keterampilan">Kompetensi dan Keterampilan</h2>
+                <ul class="space-y-3 list-disc list-inside">
+                    <li data-translate="skill_1">Berbicara di Depan Umum (Public Speaking) & Komunikasi</li>
+                    <li data-translate="skill_2">Manajemen Emosi dan Stres</li>
+                    <li data-translate="skill_3">Desain Grafis (Canva)</li>
+                </ul>
+            </div>
+            <!-- Experience Section -->
+            <div id="pengalaman-content" class="content-panel rounded-lg p-6 hidden">
+                <h2 class="text-2xl font-bold text-white mb-4" data-translate="title_pengalaman">Pengalaman dan Kisah Hidup</h2>
+                
+                <h3 class="text-lg font-semibold text-white mb-2" data-translate="exp_title_pengalaman">Pengalaman</h3>
+                <ul class="space-y-3 list-disc list-inside">
+                    <li data-translate="exp_1">Anggota OSIS SMK</li>
+                    <li data-translate="exp_2">Anggota IPPNU</li>
+                    <li data-translate="exp_3">Pelajar Penggerak Angkatan 2</li>
+                    <li data-translate="exp_4">Panitia Aktif Kegiatan Desa</li>
+                </ul>
+
+                <div class="mt-6 pt-4 border-t border-slate-600">
+                    <h3 class="text-lg font-semibold text-white mb-3" data-translate="exp_title_kisah">Kisah Hidup</h3>
+                    <div class="space-y-4 text-slate-300 text-sm">
+                        <p data-translate="exp_kisah_1">Saya lahir di Pekalongan pada tanggal 25 April 2009. Masa kecil saya dihabiskan di lingkungan pedesaan yang asri. Saya tumbuh dengan bermain di kebun belakang rumah dan berlari-lari di sawah. Dunia saya saat itu sangat sederhana, hanya seputar keluarga dan lingkungan sekitar yang tenang.</p>
+                        <p data-translate="exp_kisah_2">Pada usia 7 tahun, saya memulai babak baru dengan masuk sekolah dasar. Di sinilah saya mulai berinteraksi dengan banyak orang dan belajar hal-hal baru. Di kelas, saya belajar Matematika dan Bahasa Indonesia. Momen paling berkesan adalah ketika berhasil menjadi juara 1 Lomba Meronce.</p>
+                        <p data-translate="exp_kisah_3">Transisi ke sekolah menengah pada usia 13 tahun membawa banyak perubahan. Lingkungan yang lebih besar dan pertemanan yang lebih luas membuat saya menemukan minat-minat baru, seperti menulis dan menggambar. Saya mulai lebih mandiri dalam belajar dan mengambil tanggung jawab atas pilihan saya. Memasuki usia 16 tahun, saya merasa lebih dewasa dan mulai memikirkan masa depan, seperti belajar lebih giat agar bisa masuk universitas. Semua pengalaman yang saya lalui telah membentuk saya menjadi individu yang pantang menyerah dan berani mencoba hal baru.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Achievements Section -->
+            <div id="prestasi-content" class="content-panel rounded-lg p-6 hidden">
+                <h2 class="text-2xl font-bold text-white mb-4" data-translate="title_prestasi">Daftar Prestasi</h2>
+                <ul class="space-y-3 list-disc list-inside">
+                    <li data-translate="ach_1">Pramuka Garuda, Kwartir Cabang Pekalongan (2022)</li>
+                    <li data-translate="ach_2">Juara 1 Lomba Majalah Dinding Tingkat Sekolah (2024)</li>
+                    <li data-translate="ach_3">Peserta Lolos Seleksi Jejak Pena Nasional (2025)</li>
+                </ul>
+            </div>
+            <!-- Statistics Section -->
+            <div id="statistik-content" class="content-panel rounded-lg p-6 hidden">
+                <h2 class="text-2xl font-bold text-white mb-4 text-center" data-translate="title_statistik">Statistik Alokasi Waktu Mingguan</h2>
+                <div class="mx-auto" style="max-width: 600px; height: 350px;"><canvas id="kegiatanChart"></canvas></div>
+            </div>
+            <!-- Hobbies Section -->
+            <div id="hobi-content" class="content-panel rounded-lg p-6 hidden">
+                <h2 class="text-2xl font-bold text-white mb-4 text-center" data-translate="title_hobi">Distribusi Hobi & Minat</h2>
+                <div class="mx-auto" style="max-width: 400px; height: 400px;"><canvas id="hobiChart"></canvas></div>
+            </div>
+            <!-- Analysis Section -->
+            <div id="analisis-content" class="content-panel rounded-lg p-6 hidden">
+                <h2 class="text-2xl font-bold text-white mb-6" data-translate="title_analisis">Analisis Data</h2>
+                <div class="space-y-8 text-slate-300">
+                    <!-- Bagian 1: Data -->
+                    <div>
+                        <h3 class="text-xl font-semibold text-sky-400 mb-3" data-translate="analysis_title_data">1. Data</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse analysis-table">
+                                <thead>
+                                    <tr>
+                                        <th data-translate="analysis_tbl_header_kategori">Kategori Data</th>
+                                        <th data-translate="analysis_tbl_header_deskripsi">Deskripsi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="font-semibold" data-translate="analysis_tbl_cat_hobi">Hobi</td>
+                                        <td data-translate="analysis_tbl_desc_hobi">Menonton film (12x/minggu), Mendengarkan musik (7x/minggu), Membaca novel (6x/minggu), Menulis (4x/minggu), Fotografi (3x/minggu)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-semibold" data-translate="analysis_tbl_cat_prestasi">Prestasi</td>
+                                        <td data-translate="analysis_tbl_desc_prestasi"><strong>Total:</strong> 3 (1 akademik, 2 non-akademik)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-semibold" data-translate="analysis_tbl_cat_kegiatan">Kegiatan Mingguan</td>
+                                        <td data-translate="analysis_tbl_desc_kegiatan">Rata-rata 4-5 kegiatan/hari (sekolah, olahraga, bersosialisasi, dan hobi)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Bagian 2: Perhitungan -->
+                    <div>
+                        <h3 class="text-xl font-semibold text-sky-400 mb-3" data-translate="analysis_title_calc">2. Perhitungan</h3>
+                        <ul class="space-y-2 list-disc list-inside">
+                            <li data-translate="analysis_calc_1">Rata-rata kegiatan per hari: 4-5 kegiatan.</li>
+                            <li data-translate="analysis_calc_2">Modus hobi: Menonton film (frekuensi tertinggi, 12 kali per minggu).</li>
+                            <li data-translate="analysis_calc_3">Persentase prestasi akademik: (1 / 3) &times; 100% = 33,33%.</li>
+                        </ul>
+                    </div>
+                    <!-- Bagian 3: Penyajian -->
+                    <div>
+                        <h3 class="text-xl font-semibold text-sky-400 mb-3" data-translate="analysis_title_explain">3. Penyajian dan Penjelasan</h3>
+                        <p class="mb-4" data-translate="analysis_explain_intro">Berdasarkan data dan perhitungan, dapat ditarik kesimpulan sebagai berikut:</p>
+                        <ul class="space-y-3">
+                            <li><strong class="text-sky-400" data-translate="analysis_explain_hobi_title">Hobi:</strong> <span data-translate="analysis_explain_hobi_desc">Menonton film adalah hobi yang paling sering dilakukan, yang menunjukkan minat besar pada hiburan visual.</span></li>
+                            <li><strong class="text-sky-400" data-translate="analysis_explain_prestasi_title">Prestasi:</strong> <span data-translate="analysis_explain_prestasi_desc">Meskipun memiliki prestasi akademik, mayoritas prestasi (67%) berasal dari bidang non-akademik. Hal ini menunjukkan pencapaian yang kuat di luar lingkungan sekolah.</span></li>
+                            <li><strong class="text-sky-400" data-translate="analysis_explain_kegiatan_title">Kegiatan:</strong> <span data-translate="analysis_explain_kegiatan_desc">Jadwal harian sangat padat dan produktif, dengan rata-rata 4 hingga 5 kegiatan setiap hari.</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="text-center mt-12 pt-8 border-t border-slate-700">
+            <p class="text-slate-400 italic text-sm" data-translate="footer_quote">"Jika kamu tidak berkorban untuk mimpimu, maka impianmu yang akan menjadi korban."</p>
+            <p class="text-slate-500 mt-2 text-xs" data-translate="footer_author">– Sufmi Dasco Ahmad</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Data untuk terjemahan
+            const translations = {
+                'id': {
+                    doc_title: "Biodata Interaktif - Dwi Nawang Wulan",
+                    welcome_text: "ꦱꦼꦭꦩꦼꦠ꧀ꦏꦫꦮꦸꦃꦲꦶꦁꦮꦺꦧ꧀ꦱꦶꦠꦸꦱ꧀ꦏꦸ꧉",
+                    profile_name: "Dwi Nawang Wulan",
+                    profile_name_javanese: "ꦢ꧀ꦮꦶ ꦤꦮꦁ ꦮꦸꦭꦤ꧀",
+                    profile_quote: `"Hidup layaknya naskah Drakor paling epik, di mana tiap tantangan adalah plot twist pembentuk karakter. Raih setiap detik seolah melodi terakhir, ciptakan simfoni kehidupan yang abadi, karena happy ending adalah janji di akhir babak."`,
+                    btn_biodata: "Biodata", btn_pendidikan: "Pendidikan", btn_keterampilan: "Keterampilan", btn_pengalaman: "Pengalaman",
+                    btn_prestasi: "Prestasi", btn_statistik: "Statistik", btn_hobi: "Hobi", btn_analisis: "Analisis",
+                    title_biodata: "Biodata Diri", title_pendidikan: "Riwayat Pendidikan", title_keterampilan: "Kompetensi dan Keterampilan",
+                    title_pengalaman: "Pengalaman dan Kisah Hidup", title_prestasi: "Daftar Prestasi",
+                    title_statistik: "Statistik Alokasi Waktu Mingguan", title_hobi: "Distribusi Hobi & Minat", title_analisis: "Analisis Data",
+                    bio_nama: "Nama:", bio_ttl: "Tempat, Tanggal Lahir:", bio_alamat: "Alamat:", bio_jk: "Jenis Kelamin:", bio_agama: "Agama:", bio_warga: "Kewarganegaraan:", bio_status: "Status:",
+                    val_perempuan: "Perempuan", val_indonesia: "Indonesia", val_pelajar: "Pelajar",
+                    bio_visi_title: "Visi dan Harapan", bio_cita: "Cita-cita:", val_cita: "Sarjana Psikologi", bio_harapan: "Harapan Masa Depan:", val_harapan: `"Semoga senyumku memeluk jiwa yang terluka, membisikkan bahwa mereka berharga."`,
+                    bio_kontak_title: "Informasi Kontak", bio_telepon: "Nomor Telepon:", bio_email: "dwinawangwxxyy@gmail.com",
+                    edu_sd: "SDN Waru Kidul (2015-2021)", edu_smp: "SMPN 2 Tirto (2021-2024)", edu_smk: "SMK Ma'arif NU Tirto (2024)",
+                    skill_1: "Berbicara di Depan Umum (Public Speaking) & Komunikasi", skill_2: "Manajemen Emosi dan Stres", skill_3: "Desain Grafis (Canva)",
+                    exp_title_pengalaman: "Pengalaman", exp_title_kisah: "Kisah Hidup",
+                    exp_1: "Anggota OSIS SMK", exp_2: "Anggota IPPNU", exp_3: "Pelajar Penggerak Angkatan 2", exp_4: "Panitia Aktif Kegiatan Desa",
+                    exp_kisah_1: "Saya lahir di Pekalongan pada tanggal 225 April 2009. Masa kecil saya dihabiskan di lingkungan pedesaan yang asri. Saya tumbuh dengan bermain di kebun belakang rumah dan berlari-lari di sawah. Dunia saya saat itu sangat sederhana, hanya seputar keluarga dan lingkungan sekitar yang tenang.",
+                    exp_kisah_2: "Pada usia 7 tahun, saya memulai babak baru dengan masuk sekolah dasar. Di sinilah saya mulai berinteraksi dengan banyak orang dan belajar hal-hal baru. Di kelas, saya belajar Matematika dan Bahasa Indonesia. Momen paling berkesan adalah ketika berhasil menjadi juara 1 Lomba Meronce.",
+                    exp_kisah_3: "Transisi ke sekolah menengah pada usia 13 tahun membawa banyak perubahan. Lingkungan yang lebih besar dan pertemanan yang lebih luas membuat saya menemukan minat-minat baru, seperti menulis dan menggambar. Saya mulai lebih mandiri dalam belajar dan mengambil tanggung jawab atas pilihan saya. Memasuki usia 16 tahun, saya merasa lebih dewasa dan mulai memikirkan masa depan, seperti belajar lebih giat agar bisa masuk universitas. Semua pengalaman yang saya lalui telah membentuk saya menjadi individu yang pantang menyerah dan berani mencoba hal baru.",
+                    ach_1: "Pramuka Garuda, Kwartir Cabang Pekalongan (2022)", ach_2: "Juara 1 Lomba Majalah Dinding Tingkat Sekolah (2024)", ach_3: "Peserta Lolos Seleksi Jejak Pena Nasional (2025)",
+                    footer_quote: `"Jika kamu tidak berkorban untuk mimpimu, maka impianmu yang akan menjadi korban."`,
+                    footer_author: "– Sufmi Dasco Ahmad",
+                    chart_kegiatan_labels: ['Tidur', 'Sekolah', 'Belajar Mandiri', 'Hobi', 'Sosialisasi', 'Lain-lain'], chart_kegiatan_title: 'Total Jam per Minggu',
+                    chart_hobi_labels: ['Fotografi', 'Menulis', 'Membaca Novel', 'Musik', 'Menonton Film'],
+                    analysis_title_data: "1. Data", analysis_tbl_header_kategori: "Kategori Data", analysis_tbl_header_deskripsi: "Deskripsi",
+                    analysis_tbl_cat_hobi: "Hobi", analysis_tbl_desc_hobi: "Menonton film (12x/minggu), Mendengarkan musik (7x/minggu), Membaca novel (6x/minggu), Menulis (4x/minggu), Fotografi (3x/minggu)",
+                    analysis_tbl_cat_prestasi: "Prestasi", analysis_tbl_desc_prestasi: "<strong>Total:</strong> 3 (1 akademik, 2 non-akademik)",
+                    analysis_tbl_cat_kegiatan: "Kegiatan Mingguan", analysis_tbl_desc_kegiatan: "Rata-rata 4-5 kegiatan/hari (sekolah, olahraga, bersosialisasi, dan hobi)",
+                    analysis_title_calc: "2. Perhitungan", analysis_calc_1: "Rata-rata kegiatan per hari: 4-5 kegiatan.", analysis_calc_2: "Modus hobi: Menonton film (frekuensi tertinggi, 12 kali per minggu).", analysis_calc_3: "Persentase prestasi akademik: (1 / 3) &times; 100% = 33,33%.",
+                    analysis_title_explain: "3. Penyajian dan Penjelasan", analysis_explain_intro: "Berdasarkan data dan perhitungan, dapat ditarik kesimpulan sebagai berikut:",
+                    analysis_explain_hobi_title: "Hobi:", analysis_explain_hobi_desc: "Menonton film adalah hobi yang paling sering dilakukan, yang menunjukkan minat besar pada hiburan visual.",
+                    analysis_explain_prestasi_title: "Prestasi:", analysis_explain_prestasi_desc: "Meskipun memiliki prestasi akademik, mayoritas prestasi (67%) berasal dari bidang non-akademik. Hal ini menunjukkan pencapaian yang kuat di luar lingkungan sekolah.",
+                    analysis_explain_kegiatan_title: "Kegiatan:", analysis_explain_kegiatan_desc: "Jadwal harian sangat padat dan produktif, dengan rata-rata 4 hingga 5 kegiatan setiap hari."
+                },
+                'en': {
+                    doc_title: "Interactive Biodata - Dwi Nawang Wulan",
+                    welcome_text: "Welcome to my website.",
+                    profile_name: "Dwi Nawang Wulan",
+                    profile_name_javanese: "ꦢ꧀ꦮꦶ ꦤꦮꦁ ꦮꦸꦭꦤ꧀",
+                    profile_quote: `"Life is like the most epic K-drama script, where every challenge is a character-defining plot twist. Seize every moment as if it's the last melody, create a symphony of eternal life, because a happy ending is the promise at the final chapter."`,
+                    btn_biodata: "Profile", btn_pendidikan: "Education", btn_keterampilan: "Skills", btn_pengalaman: "Experience",
+                    btn_prestasi: "Achievements", btn_statistik: "Statistics", btn_hobi: "Hobbies", btn_analisis: "Analysis",
+                    title_biodata: "Personal Profile", title_pendidikan: "Educational History", title_keterampilan: "Competencies and Skills",
+                    title_pengalaman: "Experience and Life Story", title_prestasi: "List of Achievements",
+                    title_statistik: "Weekly Time Allocation Statistics", title_hobi: "Distribution of Hobbies & Interests", title_analisis: "Data Analysis",
+                    bio_nama: "Name:", bio_ttl: "Place, Date of Birth:", bio_alamat: "Address:", bio_jk: "Gender:", bio_agama: "Religion:", bio_warga: "Citizenship:", bio_status: "Status:",
+                    val_perempuan: "Female", val_indonesia: "Indonesian", val_pelajar: "Student",
+                    bio_visi_title: "Vision and Hope", bio_cita: "Ambition:", val_cita: "Bachelor of Psychology", bio_harapan: "Future Hope:", val_harapan: `"May my smile embrace wounded souls, whispering that they are precious."`,
+                    bio_kontak_title: "Contact Information", bio_telepon: "Phone Number:", bio_email: "dwinawangwulan80@gmail.com",
+                    edu_sd: "Waru Kidul Elementary School (2015-2021)", edu_smp: "SMPN 2 Tirto (2021-2024)", edu_smk: "SMK Ma'arif NU Tirto (2024)",
+                    skill_1: "Public Speaking & Communication", skill_2: "Emotional & Stress Management", skill_3: "Graphic Design (Canva)",
+                    exp_title_pengalaman: "Experience", exp_title_kisah: "Life Story",
+                    exp_1: "Member of Vocational School's Student Council (OSIS)", exp_2: "Member of IPPNU", exp_3: "Student Ambassador Batch 2", exp_4: "Active Committee Member in Village Activities",
+                    exp_kisah_1: "I was born in Pekalongan on April 5, 2009. My childhood was spent in a beautiful rural environment. I grew up playing in the backyard and running through the rice fields. My world was very simple then, revolving only around family and the quiet surroundings.",
+                    exp_kisah_2: "At the age of 7, I started a new chapter by entering elementary school. It was here that I began to interact with many people and learn new things. In class, I studied Mathematics and Indonesian. The most memorable moment was winning 1st place in a bead-stringing competition.",
+                    exp_kisah_3: "Transitioning to middle school at 13 brought many changes. A larger environment and wider friendships led me to discover new interests, like writing and drawing. I became more independent in my studies and took responsibility for my choices. Turning 16, I feel more mature and have started thinking about the future, such as studying harder to get into university. All my experiences have shaped me into a resilient individual who is brave enough to try new things.",
+                    ach_1: "Garuda Scout, Pekalongan Branch (2022)", ach_2: "1st Place in School-Level Wall Magazine Competition (2024)", ach_3: "Qualified Participant for the National Jejak Pena Event (2025)",
+                    footer_quote: `"If you don't sacrifice for your dream, then your dream will become the sacrifice."`,
+                    footer_author: "– Sufmi Dasco Ahmad",
+                    chart_kegiatan_labels: ['Sleep', 'School', 'Self-Study', 'Hobbies', 'Socializing', 'Other'], chart_kegiatan_title: 'Total Hours per Week',
+                    chart_hobi_labels: ['Photography', 'Writing', 'Reading Novels', 'Music', 'Watching Movies'],
+                    analysis_title_data: "1. Data", analysis_tbl_header_kategori: "Data Category", analysis_tbl_header_deskripsi: "Description",
+                    analysis_tbl_cat_hobi: "Hobbies", analysis_tbl_desc_hobi: "Watching movies (12x/week), Listening to music (7x/week), Reading novels (6x/week), Writing (4x/week), Photography (3x/week)",
+                    analysis_tbl_cat_prestasi: "Achievements", analysis_tbl_desc_prestasi: "<strong>Total:</strong> 3 (1 academic, 2 non-academic)",
+                    analysis_tbl_cat_kegiatan: "Weekly Activities", analysis_tbl_desc_kegiatan: "Average 4-5 activities/day (school, sports, socializing, and hobbies)",
+                    analysis_title_calc: "2. Calculations", analysis_calc_1: "Average daily activities: 4-5 activities.", analysis_calc_2: "Hobby mode: Watching movies (highest frequency, 12 times per week).", analysis_calc_3: "Percentage of academic achievements: (1 / 3) &times; 100% = 33.33%.",
+                    analysis_title_explain: "3. Presentation and Explanation", analysis_explain_intro: "Based on the data and calculations, here are the conclusions:",
+                    analysis_explain_hobi_title: "Hobbies:", analysis_explain_hobi_desc: "Watching movies is my most frequent hobby, showing a great interest in visual entertainment.",
+                    analysis_explain_prestasi_title: "Achievements:", analysis_explain_prestasi_desc: "Although I have academic achievements, the majority of my achievements (67%) are from non-academic fields. This shows that I have strong accomplishments outside of the school environment.",
+                    analysis_explain_kegiatan_title: "Activities:", analysis_explain_kegiatan_desc: "I have a very busy and productive schedule, with an average of 4 to 5 activities every day."
+                },
+                'jv': {
+                    doc_title: "Biodata Interaktif - Dwi Nawang Wulan",
+                    welcome_text: "ꦱꦼꦭꦩꦼꦠ꧀ꦏꦫꦮꦸꦃꦲꦶꦁꦮꦺꦧ꧀ꦱꦶꦠꦸꦱ꧀ꦏꦸ꧉",
+                    profile_name: "Dwi Nawang Wulan",
+                    profile_name_javanese: "ꦢ꧀ꦮꦶ ꦤꦮꦁ ꦮꦸꦭꦤ꧀",
+                    profile_quote: `"Urip kaya naskah Drakor sing paling epik, ing ngendi saben tantangan iku plot twist sing mbentuk karakter. Genggem saben detik kaya melodi pungkasan, gawe simfoni urip sing langgeng, amarga pungkasan sing bahagia iku janji ing pungkasan babak."`,
+                    btn_biodata: "Biodata", btn_pendidikan: "Pendidikan", btn_keterampilan: "Katrampilan", btn_pengalaman: "Pengalaman",
+                    btn_prestasi: "Prestasi", btn_statistik: "Statistik", btn_hobi: "Hobi", btn_analisis: "Analisis",
+                    title_biodata: "Biodata Pribadi", title_pendidikan: "Riwayat Pendidikan", title_keterampilan: "Katrampilan",
+                    title_pengalaman: "Pengalaman lan Crita Urip", title_prestasi: "Prestasi",
+                    title_statistik: "Statistik Alokasi Wektu Mingguan", title_hobi: "Sebaran Hobi & Minat", title_analisis: "Analisis Data",
+                    bio_nama: "Jeneng:", bio_ttl: "Papan, Tanggal Lair:", bio_alamat: "Alamat:", bio_jk: "Jinis Kelamin:", bio_agama: "Agama:", bio_warga: "Kewarganegaraan:", bio_status: "Status:",
+                    val_perempuan: "Wadon", val_indonesia: "Indonesia", val_pelajar: "Siswa",
+                    bio_visi_title: "Visi lan Pangarep-arep", bio_cita: "Gegayuhan:", val_cita: "Sarjana Psikologi", bio_harapan: "Pangarep-arep:", val_harapan: `"Muga-muga esemku ngrangkul jiwa sing lara, bisik-bisik yen dheweke iku larang regane."`,
+                    bio_kontak_title: "Informasi Kontak", bio_telepon: "Nomer Telpon:", bio_email: "dwinawangwulan80@gmail.com",
+                    edu_sd: "SDN Waru Kidul (2015-2021)", edu_smp: "SMPN 2 Tirto (2021-2024)", edu_smk: "SMK Ma'arif NU Tirto (2024)",
+                    skill_1: "Ngomong ing Ngarep Umum (Public Speaking) & Komunikasi", skill_2: "Manajemen Emosi lan Stres", skill_3: "Desain Grafis (Canva)",
+                    exp_title_pengalaman: "Pengalaman", exp_title_kisah: "Crita Urip",
+                    exp_1: "Anggota OSIS SMK", exp_2: "Anggota IPPNU", exp_3: "Pelajar Penggerak Angkatan 2", exp_4: "Panitia Aktif Kagiatan Desa",
+                    exp_kisah_1: "Aku lair ing Pekalongan tanggal 25 April 2009. Masa cilikanku diwatesi ing desa sing endah. Aku gedhe dolanan ing kebon mburi omah lan mlayu-mlayu ing sawah. Donya kuwi sederhana banget, mung ing babagan keluarga lan lingkungan sing tenang.",
+                    exp_kisah_2: "Ing umur 7 taun, aku miwiti babak anyar kanthi mlebu sekolah dhasar. Ing kene aku wiwit interaksi karo akeh wong lan sinau bab-bab anyar. Ing kelas, aku sinau Matematika lan Bahasa Indonesia. Momen sing paling berkesan yaiku nalika aku dadi juara 1 Lomba Meronce.",
+                    exp_kisah_3: "Transisi menyang sekolah menengah ing umur 13 taun nggawa akeh owah-owahan. Lingkungan sing luwih gedhe lan pertemanan sing luwih jembar nggawe aku nemokake minat-minat anyar, kayata nulis lan nggambar. Aku wiwit luwih mandiri sinau lan njupuk tanggung jawab marang pilihanku. Ngancik umur 16 taun, aku ngrasa luwih dewasa lan wiwit mikirake masa depan, kaya sinau luwih giat supaya bisa mlebu universitas. Kabeh pengalaman sing tak alami wis mbentuk aku dadi individu sing ora gampang nyerah lan wani nyoba bab anyar.",
+                    ach_1: "Pramuka Garuda, Kwartir Cabang Pekalongan (2022)", ach_2: "Juara 1 Lomba Majalah Dinding Tingkat Sekolah (2024)", ach_3: "Peserta Lolos Seleksi Jejak Pena Nasional (2025)",
+                    footer_quote: `"Yen kowe ora ngorbanake impianmu, mula impianmu sing bakal dadi korban."`,
+                    footer_author: "– Sufmi Dasco Ahmad",
+                    chart_kegiatan_labels: ['Turu', 'Sekolah', 'Sinau Mandiri', 'Hobi', 'Sosialisasi', 'Liyane'], chart_kegiatan_title: 'Total Jam per Minggu',
+                    chart_hobi_labels: ['Fotografi', 'Nulis', 'Maca Novel', 'Musik', 'Nonton Film'],
+                    analysis_title_data: "1. Data", analysis_tbl_header_kategori: "Kategori Data", analysis_tbl_header_deskripsi: "Deskripsi",
+                    analysis_tbl_cat_hobi: "Hobi", analysis_tbl_desc_hobi: "Nonton film (12x/minggu), Ngrungokake musik (7x/minggu), Maca novel (6x/minggu), Nulis (4x/minggu), Fotografi (3x/minggu)",
+                    analysis_tbl_cat_prestasi: "Prestasi", analysis_tbl_desc_prestasi: "<strong>Total:</strong> 3 (1 akademik, 2 non-akademik)",
+                    analysis_tbl_cat_kegiatan: "Kagiatan Mingguan", analysis_tbl_desc_kegiatan: "Rata-rata 4-5 kagiatan/dina (sekolah, olahraga, sosialisasi, lan hobi)",
+                    analysis_title_calc: "2. Perhitungan", analysis_calc_1: "Rata-rata kagiatan per dina: 4-5 kagiatan.", analysis_calc_2: "Modus hobi: Nonton film (frekuensi paling dhuwur, 12 kali saben minggu).", analysis_calc_3: "Persentase prestasi akademik: (1 / 3) &times; 100% = 33,33%.",
+                    analysis_title_explain: "3. Penyajian lan Penjelasan", analysis_explain_intro: "Adhedhasar data lan perhitungan, bisa disimpulake kaya ing ngisor iki:",
+                    analysis_explain_hobi_title: "Hobi:", analysis_explain_hobi_desc: "Nonton film minangka hobi sing paling kerep ditindakake, sing nuduhake minat gedhe ing hiburan visual.",
+                    analysis_explain_prestasi_title: "Prestasi:", analysis_explain_prestasi_desc: "Sanajan duwe prestasi akademik, mayoritas prestasi (67%) asale saka bidang non-akademik. Iki nuduhake yen dheweke duwe prestasi sing kuat ing njaba lingkungan sekolah.",
+                    analysis_explain_kegiatan_title: "Kagiatan:", analysis_explain_kegiatan_desc: "Jadwal saben dina padhet lan produktif, kanthi rata-rata 4 nganti 5 kagiatan saben dina."
+                },
+                'ar': {
+                    doc_title: "السيرة الذاتية التفاعلية - دوي ناوانغ وولان",
+                    welcome_text: "مرحبا بكم في موقعي.",
+                    profile_name: "Dwi Nawang Wulan",
+                    profile_name_javanese: "ꦢ꧀ꦮꦶ ꦤꦮꦁ ꦮꦸꦭꦤ꧀",
+                    profile_quote: `"الحياة مثل أكثر سيناريوهات الدراما الكورية ملحمية، حيث يمثل كل تحدٍ حبكة رئيسية تحدد شخصيتك. اغتنم كل لحظة كما لو كانت اللحن الأخير، وابتكر سمفونية حياة خالدة، لأن النهاية السعيدة هي الوعد في الفصل الأخير."`,
+                    btn_biodata: "سيرة ذاتية", btn_pendidikan: "تعليم", btn_keterampilan: "مهارات", btn_pengalaman: "خبرة",
+                    btn_prestasi: "إنجازات", btn_statistik: "إحصائيات", btn_hobi: "هوايات", btn_analisis: "تحليل",
+                    title_biodata: "سيرة ذاتية شخصية", title_pendidikan: "تاريخ التعليم", title_keterampilan: "الكفاءات والمهارات",
+                    title_pengalaman: "الخبرة وقصة الحياة", title_prestasi: "قائمة الإنجازات",
+                    title_statistik: "إحصائيات تخصيص الوقت الأسبوعي", title_hobi: "توزيع الهوايات والاهتمامات", title_analisis: "تحليل البيانات",
+                    bio_nama: "الاسم:", bio_ttl: "مكان وتاريخ الميلاد:", bio_alamat: "العنوان:", bio_jk: "الجنس:", bio_agama: "الدين:", bio_warga: "الجنسية:", bio_status: "الحالة:",
+                    val_perempuan: "أنثى", val_indonesia: "إندونيسي", val_pelajar: "طالب",
+                    bio_visi_title: "الرؤية والأمل", bio_cita: "الطموح:", val_cita: "بكالوريوس علم النفس", bio_harapan: "الأمل المستقبلي:", val_harapan: `"أتمنى أن تحتضن ابتسامتي الأرواح الجريحة، وأن تهمس لهم بأنهم ثمينون."`,
+                    bio_kontak_title: "معلومات الاتصال", bio_telepon: "رقم الهاتف:", bio_email: "dwinawangwulan80@gmail.com",
+                    edu_sd: "مدرسة وارو كيدول الابتدائية (2015-2021)", edu_smp: "مدرسة SMPN 2 تيرتو (2021-2024)", edu_smk: "مدرسة SMK معارف NU تيرتو (2024)",
+                    skill_1: "التحدث أمام الجمهور والتواصل", skill_2: "إدارة العواطف والتوتر", skill_3: "التصميم الجرافيكي (كانفا)",
+                    exp_title_pengalaman: "الخبرة", exp_title_kisah: "قصة الحياة",
+                    exp_1: "عضو في مجلس الطلاب بالمدرسة المهنية (OSIS)", exp_2: "عضو في IPPNU", exp_3: "سفير طالب الدفعة الثانية", exp_4: "عضو نشط في لجنة الأنشطة بالقرية",
+                    exp_kisah_1: "ولدت في بيكالونجان في 5 أبريل 2009. قضيت طفولتي في بيئة ريفية جميلة. نشأت ألعب في الفناء الخلفي وأركض في حقول الأرز. كان عالمي بسيطًا جدًا في ذلك الوقت، يدور حول العائلة والبيئة الهادئة.",
+                    exp_kisah_2: "في سن السابعة، بدأت فصلاً جديدًا بالالتحاق بالمدرسة الابتدائية. هنا بدأت أتفاعل مع الكثير من الناس وأتعلم أشياء جديدة. في الفصل، درست الرياضيات واللغة الإندونيسية. كانت أكثر اللحظات التي لا تنسى هي الفوز بالمركز الأول في مسابقة خرز الخرز.",
+                    exp_kisah_3: "جلب الانتقال إلى المرحلة الإعدادية في سن 13 عامًا العديد من التغييرات. أدت البيئة الأكبر والصداقات الأوسع إلى اكتشافي لاهتمامات جديدة، مثل الكتابة والرسم. أصبحت أكثر استقلالية في دراستي وتحملت مسؤولية خياراتي. في سن 16 عامًا، أشعر أنني أكثر نضجًا وبدأت أفكر في المستقبل، مثل الدراسة بجد أكبر للالتحاق بالجامعة. لقد شكلتني كل تجاربي لأصبح فردًا مرنًا وشجاعًا بما يكفي لتجربة أشياء جديدة.",
+                    ach_1: "كشافة جارودا، فرع بيكالونجان (2022)", ach_2: "المركز الأول في مسابقة مجلة الحائط على مستوى المدرسة (2024)", ach_3: "مشارك مؤهل في حدث جيجاك بينا الوطني (2025)",
+                    footer_quote: `"إذا لم تضح من أجل حلمك، فإن حلمك سيصبح هو الضحية."`,
+                    footer_author: "– Sufmi Dasco Ahmad",
+                    chart_kegiatan_labels: ['نوم', 'مدرسة', 'دراسة ذاتية', 'هوايات', 'تواصل اجتماعي', 'أخرى'], chart_kegiatan_title: 'إجمالي الساعات في الأسبوع',
+                    chart_hobi_labels: ['تصوير فوتوغرافي', 'كتابة', 'قراءة روايات', 'موسيقى', 'مشاهدة أفلام'],
+                    analysis_title_data: "1. البيانات", analysis_tbl_header_kategori: "فئة البيانات", analysis_tbl_header_deskripsi: "الوصف",
+                    analysis_tbl_cat_hobi: "هوايات", analysis_tbl_desc_hobi: "مشاهدة أفلام (12x/أسبوع)، الاستماع إلى الموسيقى (7x/أسبوع)، قراءة روايات (6x/أسبوع)، كتابة (4x/أسبوع)، تصوير فوتوغرافي (3x/أسبوع)",
+                    analysis_title_calc: "2. الحسابات", analysis_calc_1: "متوسط الأنشطة اليومية: 4-5 أنشطة.", analysis_calc_2: "نمط الهواية: مشاهدة الأفلام (أعلى تكرار، 12 مرة في الأسبوع).", analysis_calc_3: "نسبة الإنجازات الأكاديمية: (1 / 3) &times; 100% = 33.33%.",
+                    analysis_title_explain: "3. العرض والشرح", analysis_explain_intro: "بناءً على البيانات والحسابات، إليك الاستنتاجات:",
+                    analysis_explain_hobi_title: "الهوايات:", analysis_explain_hobi_desc: "مشاهدة الأفلام هي هوايتي الأكثر تكرارًا، مما يدل على اهتمام كبير بالترفيه المرئي.",
+                    analysis_explain_prestasi_title: "الإنجازات:", analysis_explain_prestasi_desc: "على الرغم من أن لدي إنجازات أكاديمية، فإن غالبية إنجازاتي (67%) هي من المجالات غير الأكاديمية. هذا يظهر أن لدي إنجازات قوية خارج البيئة المدرسية.",
+                    analysis_explain_kegiatan_title: "الأنشطة:", analysis_explain_kegiatan_desc: "لدي جدول زمني مزدحم ومنتج للغاية، بمتوسط 4 إلى 5 أنشطة كل يوم."
+                }
+            };
+            
+            // Function to handle language switching
+            function switchLanguage(lang) {
+                document.querySelectorAll('[data-translate]').forEach(element => {
+                    const key = element.getAttribute('data-translate');
+                    if (translations[lang] && translations[lang][key]) {
+                        // For HTML content
+                        if (element.innerHTML.includes('<strong>') || element.innerHTML.includes('<span>')) {
+                             // Replace inner text while preserving inner HTML for tags like <strong>
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = translations[lang][key];
+                            element.childNodes.forEach(node => {
+                                if (node.nodeType === Node.TEXT_NODE) {
+                                    node.textContent = tempDiv.firstChild ? tempDiv.firstChild.textContent : '';
+                                }
+                            });
+                            // Directly replace innerHTML for better rendering of bold tags
+                            element.innerHTML = translations[lang][key];
+                        } else {
+                            // For simple text content
+                            element.textContent = translations[lang][key];
+                        }
+                    }
+                });
+                // Update document title
+                const docTitleElement = document.querySelector('title');
+                if (docTitleElement) {
+                    docTitleElement.textContent = translations[lang]['doc_title'];
+                }
+
+                // Handle special case for Javanese font
+                if (lang === 'jv') {
+                    document.body.style.fontFamily = `'Noto Sans Javanese', sans-serif`;
+                } else if (lang === 'ar') {
+                    document.body.style.fontFamily = `'Noto Naskh Arabic', sans-serif`;
+                } else {
+                    document.body.style.fontFamily = `'Poppins', sans-serif`;
+                }
+            }
+
+            // Language switch button handler
+            const langButtons = document.querySelectorAll('.lang-button');
+            langButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    langButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    switchLanguage(button.getAttribute('data-lang'));
+                });
+            });
+
+            // Initial language load
+            switchLanguage('id');
+
+            // Navigation handler
+            const navButtons = document.querySelectorAll('.nav-button');
+            const contentPanels = document.querySelectorAll('.content-panel');
+            
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('data-target');
+                    
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    contentPanels.forEach(panel => {
+                        gsap.to(panel, {
+                            opacity: 0,
+                            duration: 0.3,
+                            onComplete: () => {
+                                panel.classList.add('hidden');
+                                if (panel.id === targetId) {
+                                    panel.classList.remove('hidden');
+                                    gsap.to(panel, { opacity: 1, duration: 0.5 });
+                                }
+                            }
+                        });
+                    });
+                });
+            });
+
+            // GSAP Animations
+            gsap.from("#header", { duration: 1, y: -50, opacity: 0, ease: "bounce.out" });
+            gsap.from("#button-container", { duration: 0.8, y: 50, opacity: 0, ease: "power2.out", delay: 0.5 });
+
+            // Chart Data
+            const kegiatanData = [56, 40, 20, 16, 12, 24]; // Total = 168 hours in a week
+            const hobiData = [3, 4, 6, 7, 12];
+            const colors = ['#0ea5e9', '#38bdf8', '#7dd3fc', '#a8a8fc', '#c0c0ff', '#e0e0ff'];
+            const labelsKegiatan = ['Tidur', 'Sekolah', 'Belajar Mandiri', 'Hobi', 'Sosialisasi', 'Lain-lain'];
+            const labelsHobi = ['Fotografi', 'Menulis', 'Membaca Novel', 'Musik', 'Menonton Film'];
+
+            // Fungsi untuk membuat gradien
+            function createGradient(chartContext, colors) {
+                const ctx = chartContext.chart.ctx;
+                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, colors[0]);
+                gradient.addColorStop(1, colors[1]);
+                return gradient;
+            }
+
+            // Kegiatan Chart
+            const kegiatanChartCtx = document.getElementById('kegiatanChart').getContext('2d');
+            const kegiatanChart = new Chart(kegiatanChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: labelsKegiatan,
+                    datasets: [{
+                        label: 'Jam',
+                        data: kegiatanData,
+                        backgroundColor: colors,
+                        borderColor: '#1e293b',
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeInOutQuart'
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#334155'
+                            },
+                            ticks: {
+                                color: '#e2e8f0'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#e2e8f0'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Total Jam per Minggu',
+                            color: '#e2e8f0',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) { label += context.parsed.y + ' jam'; }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Hobi Chart
+            const hobiChartCtx = document.getElementById('hobiChart').getContext('2d');
+            const hobiChart = new Chart(hobiChartCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: labelsHobi,
+                    datasets: [{
+                        data: hobiData,
+                        backgroundColor: colors,
+                        borderColor: '#1e293b',
+                        borderWidth: 2,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeOutElastic'
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e2e8f0'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribusi Hobi & Minat',
+                            color: '#e2e8f0',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + 'x/minggu';
+                                    }
+                                    return label;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            color: '#e2e8f0',
+                            formatter: (value, context) => {
+                                const total = context.chart.data.datasets[0].data.reduce((sum, current) => sum + current, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return percentage + '%';
+                            },
+                            font: {
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
+                // Register datalabels plugin
+                plugins: [ChartDataLabels]
+            });
+
+            // --- Starfield Animation ---
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            const numParticles = 200;
+            const maxDistance = 100;
+
+            function setCanvasSize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+
+            function createParticles() {
+                particles = [];
+                for (let i = 0; i < numParticles; i++) {
+                    particles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        radius: Math.random() * 1.5 + 0.5,
+                        opacity: Math.random() * 0.5 + 0.2
+                    });
+                }
+            }
+
+            function drawParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (const p of particles) {
+                    // Update particle position
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    // Wrap around
+                    if (p.x < 0) p.x = canvas.width;
+                    if (p.x > canvas.width) p.x = 0;
+                    if (p.y < 0) p.y = canvas.height;
+                    if (p.y > canvas.height) p.y = 0;
+
+                    // Draw the particle (star)
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2, false);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+                    ctx.fill();
+                }
+            }
+
+            function drawLines() {
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const p1 = particles[i];
+                        const p2 = particles[j];
+                        const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+
+                        if (distance < maxDistance) {
+                            ctx.beginPath();
+                            ctx.moveTo(p1.x, p1.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.strokeStyle = `rgba(14, 165, 233, ${1 - distance / maxDistance})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animateStarfield() {
+                drawParticles();
+                drawLines();
+                requestAnimationFrame(animateStarfield);
+            }
+
+            setCanvasSize();
+            createParticles();
+            animateStarfield();
+
+            window.addEventListener('resize', () => {
+                setCanvasSize();
+                createParticles();
+            });
+
+        });
+    </script>
+</body>
+</html>
